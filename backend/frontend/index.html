@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>Smart Watchlist</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background: #0b0f19;
+        color: #ffffff;
+        min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 230px;
+        height: 100vh;
+        background: #111827;
+        border-right: 1px solid #1f2937;
+        padding: 25px 18px;
+    }
+
+    .logo {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 40px;
+    }
+
+    .logo span {
+        color: #60a5fa;
+    }
+
+    .menu {
+        list-style: none;
+    }
+
+    .menu li {
+        padding: 13px 15px;
+        margin-bottom: 8px;
+        border-radius: 10px;
+        color: #9ca3af;
+        cursor: pointer;
+    }
+
+    .menu li.active,
+    .menu li:hover {
+        background: #1e293b;
+        color: white;
+    }
+
+    /* MAIN */
+
+    .main {
+        margin-left: 230px;
+        padding: 30px;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .topbar h1 {
+        font-size: 28px;
+    }
+
+    .subtitle {
+        color: #9ca3af;
+        margin-top: 6px;
+    }
+
+    .notification {
+        background: #111827;
+        border: 1px solid #1f2937;
+        padding: 12px 16px;
+        border-radius: 12px;
+        cursor: pointer;
+    }
+
+    /* SUMMARY CARDS */
+
+    .summary {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+        margin-bottom: 30px;
+    }
+
+    .summary-card {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 14px;
+        padding: 20px;
+    }
+
+    .summary-card p {
+        color: #9ca3af;
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .summary-card h2 {
+        font-size: 25px;
+    }
+
+    /* CONTENT */
+
+    .content {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+
+    .panel {
+        background: #111827;
+        border: 1px solid #1f2937;
+        border-radius: 15px;
+        padding: 22px;
+    }
+
+    .panel-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .panel-header h2 {
+        font-size: 19px;
+    }
+
+    .add-btn {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 9px 15px;
+        border-radius: 9px;
+        cursor: pointer;
+    }
+
+    .add-btn:hover {
+        background: #1d4ed8;
+    }
+
+    /* STOCK CARD */
+
+    .stock {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 17px;
+        margin-bottom: 12px;
+        background: #0f172a;
+        border-radius: 12px;
+        border: 1px solid #1e293b;
+    }
+
+    .stock-name {
+        font-weight: bold;
+        font-size: 16px;
+    }
+
+    .stock-symbol {
+        color: #9ca3af;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .price {
+        text-align: right;
+    }
+
+    .price-value {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    .change {
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .positive {
+        color: #22c55e;
+    }
+
+    .negative {
+        color: #ef4444;
+    }
+
+    /* ALERT */
+
+    .alert {
+        padding: 15px;
+        border-radius: 11px;
+        margin-bottom: 12px;
+        background: #1f1720;
+        border: 1px solid #7f1d1d;
+    }
+
+    .alert-title {
+        color: #f87171;
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+
+    .alert-text {
+        color: #d1d5db;
+        font-size: 14px;
+    }
+
+    .no-alert {
+        color: #9ca3af;
+        text-align: center;
+        padding: 30px 10px;
+    }
+
+    /* RESPONSIVE */
+
+    @media(max-width: 1000px) {
+
+        .summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .content {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media(max-width: 700px) {
+
+        .sidebar {
+            display: none;
+        }
+
+        .main {
+            margin-left: 0;
+            padding: 20px;
+        }
+
+        .summary {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+```
+
+</head>
+
+<body>
+
+```
+<!-- SIDEBAR -->
+
+<aside class="sidebar">
+
+    <div class="logo">
+        📈 Smart<span>Watchlist</span>
+    </div>
+
+    <ul class="menu">
+        <li class="active">📊 Dashboard</li>
+        <li>⭐ Watchlist</li>
+        <li>🔔 Alerts</li>
+        <li>📰 Market News</li>
+        <li>⚙️ Settings</li>
+    </ul>
+
+</aside>
+
+
+<!-- MAIN -->
+
+<main class="main">
+
+    <div class="topbar">
+
+        <div>
+            <h1>Market Dashboard</h1>
+            <p class="subtitle">
+                Monitor your stocks and important market movements.
+            </p>
+        </div>
+
+        <div class="notification">
+            🔔 Alerts
+        </div>
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    <section class="summary">
+
+        <div class="summary-card">
+            <p>Watchlist Stocks</p>
+            <h2 id="stockCount">0</h2>
+        </div>
+
+        <div class="summary-card">
+            <p>High Alerts</p>
+            <h2 id="alertCount">0</h2>
+        </div>
+
+        <div class="summary-card">
+            <p>Market Status</p>
+            <h2>● Open</h2>
+        </div>
+
+        <div class="summary-card">
+            <p>Last Updated</p>
+            <h2 id="lastUpdated">--</h2>
+        </div>
+
+    </section>
+
+
+    <!-- CONTENT -->
+
+    <section class="content">
+
+
+        <!-- WATCHLIST -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>⭐ My Watchlist</h2>
+
+               <button class="add-btn" onclick="addStock()">
+                 + Add Stock
+                </button>
+            </div>
+
+            <div id="stocks">
+
+                <div class="no-alert">
+                    Loading stocks...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ALERTS -->
+
+        <div class="panel">
+
+            <div class="panel-header">
+
+                <h2>🔔 Recent Alerts</h2>
+
+            </div>
+
+            <div id="alerts">
+
+                <div class="no-alert">
+                    No high alerts yet.
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+```
+
+<script>
+
+    const API_URL = "http://localhost:5000";
+
+
+    async function loadStocks() {
+
+        try {
+
+            const response =
+                await fetch(`${API_URL}/api/watchlist/prices`);
+
+            const stocks = await response.json();
+
+            const stocksContainer =
+                document.getElementById("stocks");
+
+            const alertsContainer =
+                document.getElementById("alerts");
+
+            stocksContainer.innerHTML = "";
+            alertsContainer.innerHTML = "";
+
+            let alertCount = 0;
+
+
+            if (stocks.length === 0) {
+
+                stocksContainer.innerHTML =
+                    `<div class="no-alert">
+                        Your watchlist is empty.
+                    </div>`;
+
+            }
+
+
+            stocks.forEach(stock => {
+
+                const alert = stock.alert;
+
+                let changeHTML = "";
+
+                if (alert) {
+
+                    alertCount++;
+
+                    const sign =
+                        alert.percentageChange > 0 ? "+" : "";
+
+                    changeHTML = `
+                        <div class="change negative">
+                            ${sign}${alert.percentageChange}%
+                        </div>
+                    `;
+
+                    alertsContainer.innerHTML += `
+
+                        <div class="alert">
+
+                            <div class="alert-title">
+                                🔴 HIGH ALERT
+                            </div>
+
+                            <div class="alert-text">
+                                ${alert.message}
+                            </div>
+
+                        </div>
+
+                    `;
+
+                } else {
+
+                    changeHTML = `
+                        <div class="change">
+                            No major movement
+                        </div>
+                    `;
+
+                }
+
+
+                stocksContainer.innerHTML += `
+
+                    <div class="stock">
+
+                        <div>
+
+                            <div class="stock-name">
+                                ${stock.symbol}
+                            </div>
+
+                            <div class="stock-symbol">
+                                NSE Stock
+                            </div>
+
+                        </div>
+
+                        <div class="price">
+
+                            <div class="price-value">
+                                ₹${Number(stock.price).toFixed(2)}
+                            </div>
+
+                            ${changeHTML}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            });
+
+
+            if (alertCount === 0) {
+
+                alertsContainer.innerHTML =
+                    `<div class="no-alert">
+                        🟢 No high alerts right now.
+                    </div>`;
+
+            }
+
+
+            document.getElementById("stockCount")
+                .innerText = stocks.length;
+
+            document.getElementById("alertCount")
+                .innerText = alertCount;
+
+            document.getElementById("lastUpdated")
+                .innerText = new Date()
+                    .toLocaleTimeString();
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            document.getElementById("stocks").innerHTML =
+                `<div class="no-alert">
+                    ❌ Unable to connect to backend.
+                </div>`;
+
+        }
+
+    }
+
+
+    // Initial load
+    loadStocks();
+
+
+    // Refresh every 30 seconds
+    setInterval(loadStocks, 30000);
+
+    async function addStock() {
+
+    const symbol = prompt(
+        "Enter stock symbol (example: TCS.NS)"
+    );
+
+    if (!symbol) {
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            `${API_URL}/api/watchlist`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    symbol: symbol.trim().toUpperCase()
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert(data.error);
+            return;
+        }
+
+        alert(`${data.symbol} added to watchlist!`);
+
+        // Refresh dashboard
+        loadStocks();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert("Unable to connect to backend.");
+
+    }
+}
+
+</script>
+
+</body>
+</html>
