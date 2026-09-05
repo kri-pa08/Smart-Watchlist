@@ -27,6 +27,15 @@ async function initDB() {
       fetched_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  await db.run(`
+  ALTER TABLE price_history
+  ADD COLUMN change_percentage REAL
+`).catch(() => {});
+
+await db.run(`
+  ALTER TABLE price_history
+  ADD COLUMN anomaly_level TEXT
+`).catch(() => {});
   await db.exec(`
   CREATE TABLE IF NOT EXISTS alerts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,6 +47,17 @@ async function initDB() {
     current_price REAL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     is_read INTEGER DEFAULT 0
+  )
+`);
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS news (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    stock_symbol TEXT NOT NULL,
+    title TEXT NOT NULL,
+    link TEXT UNIQUE,
+    source TEXT,
+    published_at DATETIME,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `);
 

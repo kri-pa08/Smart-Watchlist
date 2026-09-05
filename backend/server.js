@@ -7,6 +7,7 @@ const { getStockPrice } = require('./stockService');
 const watchlistRoutes = require('./watchlistRoutes');
 const alertRoutes = require('./alertRoutes');
 const { startMonitoring } = require('./monitorService');
+const newsRoutes = require('./newsRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -18,6 +19,7 @@ app.use(express.json());
 // Watchlist routes
 app.use('/api/watchlist', watchlistRoutes);
 app.use('/api/alerts', alertRoutes);
+app.use('/api/news', newsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

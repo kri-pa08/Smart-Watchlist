@@ -62,28 +62,43 @@ async function getStockPrice(symbol) {
       );
     }
 
-    if (alert) {
-  await db.run(
-    `INSERT INTO alerts (
-      stock_symbol,
-      alert_type,
-      message,
-      percentage_change,
-      previous_price,
-      current_price
-    )
-    VALUES (?, ?, ?, ?, ?, ?)`,
-    [
-      alert.symbol,
-      alert.alertLevel,
-      alert.message,
-      alert.percentageChange,
-      alert.previousPrice,
-      alert.currentPrice
-    ]
+ if (alert) {
+  const recentAlert = await db.get(
+    `SELECT *
+     FROM alerts
+     WHERE stock_symbol = ?
+     AND alert_type = ?
+     AND created_at >= datetime('now', '-10 minutes')
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [alert.symbol, alert.alertLevel]
   );
 
-  console.log(`Alert saved for ${symbol}`);
+  if (recentAlert) {
+    console.log(`Duplicate alert skipped for ${symbol}`);
+  } else {
+    await db.run(
+      `INSERT INTO alerts (
+        stock_symbol,
+        alert_type,
+        message,
+        percentage_change,
+        previous_price,
+        current_price
+      )
+      VALUES (?, ?, ?, ?, ?, ?)`,
+      [
+        alert.symbol,
+        alert.alertLevel,
+        alert.message,
+        alert.percentageChange,
+        alert.previousPrice,
+        alert.currentPrice
+      ]
+    );
+
+    console.log(`Alert saved for ${symbol}`);
+  }
 }
 
     // Save NEW price

@@ -361,6 +361,17 @@
             </div>
 
         </div>
+        <div class="panel">
+  <div class="panel-header">
+    <h2>📰 Market News</h2>
+  </div>
+
+  <div id="news">
+    <div class="no-alert">
+      Loading news...
+    </div>
+  </div>
+</div>
 
 
         <!-- ALERTS -->
@@ -537,7 +548,7 @@
 
     }
 
-    async function loadAlerts() {
+ async function loadAlerts() {
   try {
     const response = await fetch(`${API_URL}/api/alerts`);
     const alerts = await response.json();
@@ -552,15 +563,36 @@
           🟢 No alerts yet.
         </div>
       `;
+
       document.getElementById("alertCount").innerText = 0;
       return;
     }
 
     alerts.slice(0, 5).forEach(alert => {
+
+      const sign =
+        alert.percentage_change > 0 ? "+" : "";
+
+      const movement =
+        alert.percentage_change > 0 ? "📈" : "📉";
+
       alertsContainer.innerHTML += `
         <div class="alert">
+
           <div class="alert-title">
             🔴 ${alert.alert_type} ALERT
+          </div>
+
+          <div class="alert-text">
+            <strong>${alert.stock_symbol}</strong>
+            ${movement}
+            ${sign}${alert.percentage_change}%
+          </div>
+
+          <div class="alert-text">
+            ₹${Number(alert.previous_price).toFixed(2)}
+            →
+            ₹${Number(alert.current_price).toFixed(2)}
           </div>
 
           <div class="alert-text">
@@ -570,24 +602,129 @@
           <div class="alert-time">
             ${new Date(alert.created_at).toLocaleString()}
           </div>
+
         </div>
       `;
     });
 
-    document.getElementById("alertCount").innerText = alerts.length;
+    document.getElementById("alertCount").innerText =
+      alerts.length;
 
   } catch (error) {
     console.error("Alert loading error:", error);
   }
 }
+async function loadNews() {
+  try {
+    // Get stocks from watchlist
+    const watchlistResponse =
+      await fetch(`${API_URL}/api/watchlist`);
 
+    const stocks = await watchlistResponse.json();
+
+    const newsContainer =
+      document.getElementById("news");
+
+    newsContainer.innerHTML = "";
+
+    if (stocks.length === 0) {
+      newsContainer.innerHTML = `
+        <div class="no-alert">
+          📰 Add stocks to see their news.
+        </div>
+      `;
+      return;
+    }
+
+    // Fetch news for every watchlist stock
+    for (const stock of stocks) {
+      try {
+        const response = await fetch(
+         `${API_URL}/api/news/${stock.stock_symbol}/stored`
+        );
+
+        const data = await response.json();
+
+        if (!data.news || data.news.length === 0) {
+          continue;
+        }
+
+        // Stock heading
+        newsContainer.innerHTML += `
+          <div class="news-stock-heading">
+            📰 ${stock.stock_symbol}
+          </div>
+        `;
+
+        // Show latest 3 news for each stock
+        data.news.slice(0, 3).forEach(item => {
+          newsContainer.innerHTML += `
+            <div class="news-item">
+
+              <div class="news-title">
+                ${item.title}
+              </div>
+
+              <div class="news-meta">
+                ${item.source}
+                ${item.publishedAt
+                  ? " • " +
+                    new Date(item.publishedAt)
+                      .toLocaleString()
+                  : ""}
+              </div>
+              <div class="news-summary">
+              ${item.summary || "AI summary unavailable."}
+            </div>
+
+            <div class="news-importance">
+             Importance: <strong>${item.importance || "LOW"}</strong>
+            </div>
+
+            <div class="news-signal">
+            Type: <strong>${item.signalType || "NOISE"}</strong>
+            </div>
+
+              <a
+                href="${item.link}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="news-link"
+              >
+                Read News →
+              </a>
+
+            </div>
+          `;
+        });
+
+      } catch (stockError) {
+        console.error(
+          `News failed for ${stock.stock_symbol}:`,
+          stockError
+        );
+      }
+    }
+
+  } catch (error) {
+    console.error("News loading error:", error);
+
+    document.getElementById("news").innerHTML = `
+      <div class="no-alert">
+        Unable to load news.
+      </div>
+    `;
+  }
+}
 
     // Initial load
     loadStocks();
 loadAlerts();
+loadNews();
 
 setInterval(loadStocks, 30000);
 setInterval(loadAlerts, 30000);
+setInterval(loadNews, 300000);
 
     async function addStock() {
 
