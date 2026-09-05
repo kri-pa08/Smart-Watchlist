@@ -1,0 +1,5 @@
+{
+  "ignore": ["*.db", "*.db-journal", "watchlist.db"],
+  "watch": ["*.js"],
+  "ext": "js,json"
+}
