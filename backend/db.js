@@ -27,6 +27,19 @@ async function initDB() {
       fetched_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  await db.exec(`
+  CREATE TABLE IF NOT EXISTS alerts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    stock_symbol TEXT NOT NULL,
+    alert_type TEXT NOT NULL,
+    message TEXT NOT NULL,
+    percentage_change REAL,
+    previous_price REAL,
+    current_price REAL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_read INTEGER DEFAULT 0
+  )
+`);
 
   console.log('Database initialized');
   return db;
