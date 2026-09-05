@@ -6,6 +6,7 @@ const { initDB, getDB } = require('./db');
 const { getStockPrice } = require('./stockService');
 const watchlistRoutes = require('./watchlistRoutes');
 const alertRoutes = require('./alertRoutes');
+const { startMonitoring } = require('./monitorService');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -70,6 +71,8 @@ initDB()
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
+
+    startMonitoring();
   })
   .catch((err) => {
     console.error('Database initialization failed:', err);
