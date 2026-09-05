@@ -1,7 +1,8 @@
 const { getDB } = require('./db');
 const { getStockPrice } = require('./stockService');
 
-const MONITOR_INTERVAL = 2 * 60 * 1000; // 2 minutes
+//const MONITOR_INTERVAL = 2 * 60 * 1000; // 2 minutes
+const MONITOR_INTERVAL = 10 * 60 * 1000; // 10 minutes
 
 async function monitorWatchlist() {
   try {

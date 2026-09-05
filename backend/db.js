@@ -36,6 +36,11 @@ await db.run(`
   ALTER TABLE price_history
   ADD COLUMN anomaly_level TEXT
 `).catch(() => {});
+
+await db.run(`
+  ALTER TABLE price_history
+  ADD COLUMN volume REAL
+`).catch(() => {});
   await db.exec(`
   CREATE TABLE IF NOT EXISTS alerts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

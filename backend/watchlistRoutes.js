@@ -86,5 +86,65 @@ router.delete('/:symbol', async (req, res) => {
     });
   }
 });
+// GET what changed since user's last check
+router.get('/changes', async (req, res) => {
+  try {
+    const db = getDB();
+
+    const stocks = await db.all(`
+      SELECT
+        stock_symbol,
+        price,
+        change_percentage,
+        anomaly_level,
+        volume,
+        fetched_at
+      FROM price_history
+      WHERE id IN (
+        SELECT MAX(id)
+        FROM price_history
+        GROUP BY stock_symbol
+      )
+      ORDER BY fetched_at DESC
+    `);
+
+    const changes = stocks.map(stock => {
+      const change = stock.change_percentage || 0;
+
+      return {
+        symbol: stock.stock_symbol,
+        price: stock.price,
+        changePercentage: Number(change.toFixed(2)),
+        anomaly: stock.anomaly_level || "NORMAL",
+        volume: stock.volume || 0,
+        fetchedAt: stock.fetched_at,
+
+        attention:
+          Math.abs(change) >= 5
+            ? "HIGH"
+            : Math.abs(change) >= 2
+              ? "MEDIUM"
+              : "LOW",
+
+        message:
+          Math.abs(change) >= 5
+            ? `${stock.stock_symbol} moved significantly since your last check`
+            : Math.abs(change) >= 2
+              ? `${stock.stock_symbol} showed a noticeable movement`
+              : `${stock.stock_symbol} has no major change`
+      };
+    });
+
+    res.json({
+      count: changes.length,
+      changes
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      error: err.message
+    });
+  }
+});
 
 module.exports = router;

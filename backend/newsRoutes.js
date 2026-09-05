@@ -43,12 +43,11 @@ router.get('/:symbol/stored', async (req, res) => {
       [symbol]
     );
 
-   for (const item of news) {
-  item.summary = await summarizeNews(item.title);
+ for (const item of news) {
+  item.summary = "News summary available";
   item.importance = classifyNewsImportance(item.title);
   item.signalType = detectSignalOrNoise(item.title);
 }
-
     res.json({
       symbol,
       count: news.length,

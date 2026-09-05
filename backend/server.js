@@ -42,6 +42,7 @@ app.get('/api/stock/:symbol', async (req, res) => {
 });
 
 app.get('/api/watchlist/prices', async (req, res) => {
+  console.log("WATCHLIST API CALLED", new Date().toISOString());
   try {
     const db = getDB();
 

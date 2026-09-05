@@ -372,7 +372,21 @@
     </div>
   </div>
 </div>
+<!-- WHAT DID I MISS -->
 
+<div class="panel">
+
+  <div class="panel-header">
+    <h2>👀 What Did I Miss?</h2>
+  </div>
+
+  <div id="missedChanges">
+    <div class="no-alert">
+      Checking what changed since your last visit...
+    </div>
+  </div>
+
+</div>
 
         <!-- ALERTS -->
 
@@ -479,6 +493,54 @@
                     `;
 
                 }
+                let meaningfulChangesHTML = "";
+
+const meaningfulChanges = stock.meaningfulChanges;
+
+if (
+    meaningfulChanges &&
+    meaningfulChanges.hasMeaningfulChange &&
+    meaningfulChanges.changes.length > 0
+) {
+
+    meaningfulChangesHTML = `
+        <div class="meaningful-changes">
+
+            <div class="section-title">
+                🔍 What Changed?
+            </div>
+
+            ${meaningfulChanges.changes.map(change => `
+                <div class="change-item">
+                    <strong>${change.type}</strong>
+                    <span>${change.message}</span>
+                </div>
+            `).join("")}
+
+            <div class="importance">
+                Attention:
+                <strong>
+                    ${meaningfulChanges.overallImportance}
+                </strong>
+            </div>
+
+        </div>
+    `;
+
+} else {
+
+    meaningfulChangesHTML = `
+        <div class="meaningful-changes">
+            <div class="section-title">
+            </div>
+
+            <div class="no-change">
+                No meaningful change since last check.
+            </div>
+        </div>
+    `;
+
+}
 
 
                 stocksContainer.innerHTML += `
@@ -504,6 +566,45 @@
                             </div>
 
                             ${changeHTML}
+
+<div class="stock-anomaly">
+    Anomaly:
+    <strong>
+        ${stock.anomaly?.anomalyLevel || "NORMAL"}
+    </strong>
+</div>
+${meaningfulChangesHTML}
+${stock.whyDidItMove ? `
+    <div class="why-move">
+
+        <div class="section-title">
+            💡 Why Did It Move?
+        </div>
+
+        <div class="why-explanation">
+            ${stock.whyDidItMove.explanation}
+        </div>
+
+        ${
+            stock.whyDidItMove.reasons?.length
+            ? `
+                <ul class="reason-list">
+                    ${stock.whyDidItMove.reasons.map(reason => `
+                        <li>${reason}</li>
+                    `).join("")}
+                </ul>
+            `
+            : `
+                <div class="no-change">
+                    No strong catalyst detected yet.
+                </div>
+            `
+        }
+
+    </div>
+` : ""}
+
+</div>
 
                         </div>
 
@@ -614,6 +715,79 @@
     console.error("Alert loading error:", error);
   }
 }
+async function loadMissedChanges() {
+  try {
+    const response = await fetch(
+      `${API_URL}/api/watchlist/changes`
+    );
+
+    const data = await response.json();
+
+    const container =
+      document.getElementById("missedChanges");
+
+    container.innerHTML = "";
+
+    if (!data.changes || data.changes.length === 0) {
+      container.innerHTML = `
+        <div class="no-alert">
+          No changes to report.
+        </div>
+      `;
+      return;
+    }
+
+    data.changes.forEach(stock => {
+
+      const sign =
+        stock.changePercentage > 0 ? "+" : "";
+
+      const movement =
+        stock.changePercentage > 0
+          ? "📈"
+          : stock.changePercentage < 0
+            ? "📉"
+            : "➖";
+
+      container.innerHTML += `
+        <div class="alert">
+
+          <div class="alert-title">
+            ${movement} ${stock.symbol}
+          </div>
+
+          <div class="alert-text">
+            ₹${Number(stock.price).toFixed(2)}
+            &nbsp; • &nbsp;
+            ${sign}${stock.changePercentage}%
+          </div>
+
+          <div class="alert-text">
+            Attention:
+            <strong>${stock.attention}</strong>
+          </div>
+
+          <div class="alert-text">
+            ${stock.message}
+          </div>
+
+        </div>
+      `;
+    });
+
+  } catch (error) {
+    console.error(
+      "Missed changes loading error:",
+      error
+    );
+
+    document.getElementById("missedChanges").innerHTML = `
+      <div class="no-alert">
+        Unable to load recent changes.
+      </div>
+    `;
+  }
+}
 async function loadNews() {
   try {
     // Get stocks from watchlist
@@ -721,10 +895,12 @@ async function loadNews() {
     loadStocks();
 loadAlerts();
 loadNews();
+loadMissedChanges();
 
-setInterval(loadStocks, 30000);
-setInterval(loadAlerts, 30000);
-setInterval(loadNews, 300000);
+setInterval(loadStocks, 300000);
+setInterval(loadAlerts, 300000);
+setInterval(loadNews, 3000000);
+setInterval(loadMissedChanges, 300000);
 
     async function addStock() {
 
