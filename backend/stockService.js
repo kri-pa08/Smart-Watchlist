@@ -62,6 +62,30 @@ async function getStockPrice(symbol) {
       );
     }
 
+    if (alert) {
+  await db.run(
+    `INSERT INTO alerts (
+      stock_symbol,
+      alert_type,
+      message,
+      percentage_change,
+      previous_price,
+      current_price
+    )
+    VALUES (?, ?, ?, ?, ?, ?)`,
+    [
+      alert.symbol,
+      alert.alertLevel,
+      alert.message,
+      alert.percentageChange,
+      alert.previousPrice,
+      alert.currentPrice
+    ]
+  );
+
+  console.log(`Alert saved for ${symbol}`);
+}
+
     // Save NEW price
     await db.run(
       `INSERT INTO price_history (stock_symbol, price)

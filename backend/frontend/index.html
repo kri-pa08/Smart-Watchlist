@@ -537,13 +537,57 @@
 
     }
 
+    async function loadAlerts() {
+  try {
+    const response = await fetch(`${API_URL}/api/alerts`);
+    const alerts = await response.json();
+
+    const alertsContainer = document.getElementById("alerts");
+
+    alertsContainer.innerHTML = "";
+
+    if (alerts.length === 0) {
+      alertsContainer.innerHTML = `
+        <div class="no-alert">
+          🟢 No alerts yet.
+        </div>
+      `;
+      document.getElementById("alertCount").innerText = 0;
+      return;
+    }
+
+    alerts.slice(0, 5).forEach(alert => {
+      alertsContainer.innerHTML += `
+        <div class="alert">
+          <div class="alert-title">
+            🔴 ${alert.alert_type} ALERT
+          </div>
+
+          <div class="alert-text">
+            ${alert.message}
+          </div>
+
+          <div class="alert-time">
+            ${new Date(alert.created_at).toLocaleString()}
+          </div>
+        </div>
+      `;
+    });
+
+    document.getElementById("alertCount").innerText = alerts.length;
+
+  } catch (error) {
+    console.error("Alert loading error:", error);
+  }
+}
+
 
     // Initial load
     loadStocks();
+loadAlerts();
 
-
-    // Refresh every 30 seconds
-    setInterval(loadStocks, 30000);
+setInterval(loadStocks, 30000);
+setInterval(loadAlerts, 30000);
 
     async function addStock() {
 

@@ -5,6 +5,7 @@ require('dotenv').config();
 const { initDB, getDB } = require('./db');
 const { getStockPrice } = require('./stockService');
 const watchlistRoutes = require('./watchlistRoutes');
+const alertRoutes = require('./alertRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -15,6 +16,7 @@ app.use(express.json());
 
 // Watchlist routes
 app.use('/api/watchlist', watchlistRoutes);
+app.use('/api/alerts', alertRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
