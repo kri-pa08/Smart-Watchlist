@@ -263,6 +263,8 @@ Why?
 The user can understand the situation much faster.
 
 #Project Structure:
+```text
+
 Smart-Watchlist/
 |
 ├── backend/
