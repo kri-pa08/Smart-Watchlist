@@ -138,7 +138,7 @@ This makes the information easier to understand.
 ## How It Works
 
 The system follows a simple process:
-
+```text
 User Watchlist
       |
       v
@@ -163,6 +163,7 @@ Reason / Alert
       |
       v
 Dashboard
+```
 
 ## What Makes Smart Watchlist Different?
 
