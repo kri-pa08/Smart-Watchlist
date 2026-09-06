@@ -189,6 +189,7 @@ The project is designed to reduce the time users spend checking multiple stocks 
 and Rule-based reasoning
 
 ##System Architecture
+```text
                     Smart Watchlist
                           |
              +------------+------------+
@@ -210,10 +211,11 @@ and Rule-based reasoning
                               SQLite
                                  |
                          Stored Market Data
-
+```
 ##Data and Change Detection
 The application stores historical stock information instead of only looking at the current value.
 This allows the system to compare:
+```text
 Previous Data
       +
 Current Data
@@ -227,6 +229,7 @@ Is the change meaningful?
       +---- No ----> Normal
       |
       +---- Yes ---> Attention Required
+```
 
 The system considers multiple signals instead of relying only on price.
 
