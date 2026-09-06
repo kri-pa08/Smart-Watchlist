@@ -164,7 +164,7 @@ Reason / Alert
       v
 Dashboard
 
-##What Makes Smart Watchlist Different?
+## What Makes Smart Watchlist Different?
 
 A traditional watchlist answers:
 
@@ -178,7 +178,7 @@ This changes the focus from tracking stocks to understanding changes.
 
 The project is designed to reduce the time users spend checking multiple stocks and multiple information sources.
 
-##Technology Stack
+## Technology Stack
 
 1.Frontend: HTML, CSS, JavaScript
 2.Backend: Node.js, Express.js
@@ -188,7 +188,7 @@ The project is designed to reduce the time users spend checking multiple stocks 
 6.Backend Features: REST APIs, Price history storage, Watchlist management, Alert generation, Anomaly detection, Meaningful change detection, News aggregation
 and Rule-based reasoning
 
-##System Architecture
+## System Architecture
 ```text
                     Smart Watchlist
                           |
@@ -212,7 +212,7 @@ and Rule-based reasoning
                                  |
                          Stored Market Data
 ```
-##Data and Change Detection
+## Data and Change Detection
 The application stores historical stock information instead of only looking at the current value.
 This allows the system to compare:
 ```text
@@ -240,7 +240,7 @@ These include:
 4.Unusual activity
 5.Relevant news
 
-##Example
+## Example
 
 Suppose a user is tracking TCS.
 
@@ -265,7 +265,7 @@ Why?
 
 The user can understand the situation much faster.
 
-#Project Structure:
+## Project Structure:
 ```text
 
 Smart-Watchlist/
