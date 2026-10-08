@@ -1,6 +1,6 @@
 # Smart Watchlist
 
-> A market watchlist that tells you what changed, how important it is, and why you should care.
+> A market watchlist that tells you what changed, how important it is, and why you should 
 
 ## Overview
 
