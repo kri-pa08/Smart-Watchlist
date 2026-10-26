@@ -1,4 +1,4 @@
-# Smart Watchlist
+# Smart Watch list 
 
 > A market watchlist that tells you what changed, how important it is, and why you should know.
 
